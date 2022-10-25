@@ -254,23 +254,28 @@ func main() {
 	mux.HandleFunc("/api/readData", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// time.Sleep(5 * time.Second)
-		data := r.URL.Query()["page"]
-		fmt.Println(data[0])
-		switch data[0] {
-		case "H4":
-			querydata := Query{"TPC-H_04"}
-			pbyte, _ := json.Marshal(querydata)
-			buff := bytes.NewBuffer(pbyte)
-			// fmt.Println(string(buff.Bytes()))
-			resp, err := http.Post("http://10.0.5.119:34568", "application/json", buff)
-			if err != nil {
-				fmt.Println(err)
+		// fmt.Println(r.URL.Query())
+		data := r.URL.Query()["page[selectbox]"]
+		server := r.URL.Query()["page[serverbox]"]
+		// fmt.Println(server)
+		switch server[0] {
+		case "CSD":
+			switch data[0] {
+			case "H4":
+				querydata := Query{"TPC-H_04"}
+				pbyte, _ := json.Marshal(querydata)
+				buff := bytes.NewBuffer(pbyte)
+				// fmt.Println(string(buff.Bytes()))
+				resp, err := http.Post("http://10.0.5.119:34568", "application/json", buff)
+				if err != nil {
+					fmt.Println(err)
+				}
+				defer resp.Body.Close()
+				resultdata, _ := io.ReadAll(resp.Body)
+				// fmt.Println(resultdata)
+				queryresult = string(resultdata)
+				resultflag = true
 			}
-			defer resp.Body.Close()
-			resultdata, _ := io.ReadAll(resp.Body)
-			// fmt.Println(resultdata)
-			queryresult = string(resultdata)
-			resultflag = true
 		}
 		// var jsondata string
 		var jsondata Return_Grid_Data
