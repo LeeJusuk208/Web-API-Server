@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"webapiserver/query"
 
 	"github.com/rs/cors"
 )
@@ -259,6 +260,28 @@ func main() {
 		server := r.URL.Query()["page[serverbox]"]
 		// fmt.Println(server)
 		switch server[0] {
+		case "Simul":
+			switch data[0] {
+			case "H1":
+				//append Simulator Code
+			}
+		case "SSD":
+			switch data[0] {
+			case "H4":
+				query := query.Get_SSD_Query("4")
+				querydata := Query{query}
+				pbyte, _ := json.Marshal(querydata)
+				buff := bytes.NewBuffer(pbyte)
+				resp, err := http.Post("http://10.0.5.119:34568", "application/json", buff)
+				if err != nil {
+					fmt.Println(err)
+				}
+				defer resp.Body.Close()
+				resultdata, _ := io.ReadAll(resp.Body)
+				// fmt.Println(resultdata)
+				queryresult = string(resultdata)
+				resultflag = true
+			}
 		case "CSD":
 			switch data[0] {
 			case "H4":
